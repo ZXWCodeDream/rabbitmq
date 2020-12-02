@@ -19,7 +19,6 @@ import java.util.concurrent.TimeoutException;
  * @date 2020/12/1 8:23 下午
  * @since JDK 1.8
  */
-@Component
 public class Provider {
 
     public static void main(String[] args) throws IOException, TimeoutException {

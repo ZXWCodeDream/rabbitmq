@@ -1,5 +1,6 @@
 package com.zxw.provider;
 
+import com.zxw.provider.spring.Provider;
 import entity.MsgInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ class RmqProviderApplicationTests {
 	@Test
 	void contextLoads() {
 
-		MsgInfo info = new MsgInfo("我是消息1","10001","00001");
+		MsgInfo info = new MsgInfo("我是消息","10001","00001");
 		System.out.println("****************开始发送消息******************");
 		provider.send(info);
 		System.out.println("****************结束发送消息******************");
