@@ -46,11 +46,12 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.rabbitmq/amqp-client -->
-		<dependency>
-			<groupId>com.rabbitmq</groupId>
-			<artifactId>amqp-client</artifactId>
-			<version>5.7.3</version>
-		</dependency>
+<!--		不能同时引用spring-amqp和这个包，会引发包冲突-->
+<!--		<dependency>-->
+<!--			<groupId>com.rabbitmq</groupId>-->
+<!--			<artifactId>amqp-client</artifactId>-->
+<!--			<version>5.7.3</version>-->
+<!--		</dependency>-->
 	</dependencies>
 
 	<build>

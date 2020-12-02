@@ -1,10 +1,10 @@
-package com.zxw.provider;
+package com.zxw.provider.source;
 
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.MessageProperties;
 import entity.MsgInfo;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -14,6 +14,7 @@ import java.util.concurrent.TimeoutException;
  * ClassName: Provider
  * Description:
  *
+ * 原生方法发送消息
  * @author zxw
  * @date 2020/12/1 8:23 下午
  * @since JDK 1.8
@@ -21,31 +22,6 @@ import java.util.concurrent.TimeoutException;
 @Component
 public class Provider {
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-
-    /**
-     * 特别要注意 rabbitTemplate不会自动创建queue和exchange，需要手动创建才会成功发送消息
-     * @param msgInfo
-     */
-    public void send(MsgInfo msgInfo){
-
-        CorrelationData correlationData = new CorrelationData();
-        correlationData.setId(msgInfo.getMsgId());
-        /**
-         * exchange: 交换机名称
-         * routingKey:与队列绑定的关联key
-         * object:要传送的消息
-         * correlationData：消息的唯一ID
-         */
-        rabbitTemplate.convertAndSend("msg-exchange","msg.update",msgInfo,correlationData);
-    }
-
-    /**
-     * 这是引用的rabbitmq官方默认的包
-     * 会自动创建exchange以及队列关系
-     * @param args
-     */
     public static void main(String[] args) throws IOException, TimeoutException {
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.setHost("39.107.87.42");
