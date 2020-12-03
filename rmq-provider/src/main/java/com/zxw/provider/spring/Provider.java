@@ -1,6 +1,9 @@
 package com.zxw.provider.spring;
 
 import entity.MsgInfo;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +35,21 @@ public class Provider {
          * object:要传送的消息
          * correlationData：消息的唯一ID
          */
-        rabbitTemplate.convertAndSend("msg-exchange","msg.update",msgInfo,correlationData);
+//        rabbitTemplate.convertAndSend("topic-exchange","topic.update",msgInfo,correlationData);
+
+        MessagePostProcessor messagePostProcessor = new MessagePostProcessor() {
+            @Override
+            public Message postProcessMessage(Message message) throws AmqpException {
+                // 给消息设定过期时间
+                message.getMessageProperties().setExpiration("50");
+                return message;
+            }
+        };
+        rabbitTemplate.convertAndSend("topic-exchange","topic.update",msgInfo,messagePostProcessor,correlationData);
+
+        //lambda表达式实现接口
+//        rabbitTemplate.convertAndSend("topic-exchange","topic.update",msgInfo,(Message message)->{message.getMessageProperties().setExpiration("5000");return message;},correlationData);
+
     }
 
 }

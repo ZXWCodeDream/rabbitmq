@@ -26,9 +26,9 @@ public class Consumer {
     int time = 0;
 
 
-    @RabbitListener(bindings = @QueueBinding(value = @Queue(value = "msg-queue",durable = "true",autoDelete = "false"),
-                                            exchange = @Exchange(value = "msg-exchange",durable = "true",type = "direct"),
-                                            key = "msg.update"))
+    @RabbitListener(bindings = @QueueBinding(value = @Queue(value = "topic-queue",durable = "true",autoDelete = "false"),
+                                            exchange = @Exchange(value = "topic-exchange",durable = "true",type = "topic"),
+                                            key = "topic.consume"))
     @RabbitHandler
     public void received(@Payload MsgInfo msgInfo, @Headers Map<String,Object> headers, Channel channel) throws IOException {
         System.out.println("******************开始接受消息***********************");
@@ -37,7 +37,7 @@ public class Consumer {
 
         long deliveryTag = (long)headers.get(AmqpHeaders.DELIVERY_TAG);
         try {
-            int error = 1/0;
+//            int error = 1/0;
             //ACK手动签收，若不签收，队列中的消息会被消费，但仍存在队列中，标识为unacked,只要重启服务就会重新消费这条消息
             /**
              * 手动签收消息
