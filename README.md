@@ -9,9 +9,6 @@
 **Rmq-provider**： 生产者模块
 
 
-
-### 基础知识
-
 #### rabbitmq介绍
 
 **AMQP名词介绍**
@@ -57,6 +54,7 @@
 - **fanout**：广播模式，只有exchange绑定了queue，就都可以匹配，跟routingkey配置无关。无需借助路由，所以发送消息到队列最快
 - **headers**:使用较少
 
+#### 创建队列参数介绍
 **什么是TTL？time to live:存活时间**
 **创建队列可选参数**
 - **x-message-ttl**:队列内的消息在没被消费时的存活时间
@@ -65,3 +63,23 @@
 - **x-max-length**:消息存放消息队列的数量，若超
 - 过限制，则丢弃最早的消息
 - **x-max-length-bytes**:消息队列的最大容量，新消息过来如果容量不够会删除最早的消息，如果还不够，再删一条次最早的消息
+
+#### 死信队列
+
+**什么叫死信？**在**未被消费掉之前就失效**的消息成为死信
+
+**什么叫死信队列？** 死信队列其实就是个普通队列，不过专门接受死信消息。
+
+那么死信队列有啥用呢？做**延迟消息发送**
+
+
+**死信队列实现：**
+
+- 创建队列dead-queue当做死信队列
+- 创建交换器dead-exchange作死信消息转发,routingKey为dead.*绑定dead-queue
+- 创建队列topic-queue,设置参数x-dead-letter-exchange=dead-exchange,x-dead-letter-routing-key=dead.key表示该队列的死信消息将发送到dead-exchange交换器上，最终根据dead-exchange绑定dead-queue,则死信消息流转到dead-queue
+- 创建交换器topic-exchange,设定路由routingkey=topic.*绑定topic-queue
+
+ **延迟消息流转:**
+
+ 设定消息过期时间t->发送消息到topic-exchange->路由转发到topic-queue->消息停留t时间段后->消息变为死信消息转发到dead-exchange->路由转发到dead-queue

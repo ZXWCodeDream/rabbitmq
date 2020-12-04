@@ -41,7 +41,7 @@ public class Provider {
             @Override
             public Message postProcessMessage(Message message) throws AmqpException {
                 // 给消息设定过期时间
-                message.getMessageProperties().setExpiration("50");
+                message.getMessageProperties().setExpiration("5000");
                 return message;
             }
         };
