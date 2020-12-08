@@ -9,7 +9,7 @@
 **Rmq-provider**： 生产者模块
 
 
-#### rabbitmq介绍
+### rabbitmq介绍
 
 **AMQP名词介绍**
 
@@ -37,7 +37,7 @@
 
 
 
-#### ACK和NACK
+### ACK和NACK
 
 - **ACK**就是手动签收的标识，消息成功消费后，代码中进行ACK签收，则消息将从队列中移出，若未签收，消息则滞留在队列中，标识为unacked,滞留消息不会重新被消费，只有当服务重启时才能被消费。
 
@@ -45,7 +45,7 @@
 
   > 代码见com.zxw.consumer.spring.Consumer
 
-#### Exchange交换器type详解
+### Exchange交换器type详解
 
 - **direct**：点对点直连概念，比如我们在bindings中指定routingkey为msg.update,那么发送消息到队列指定的routingKey则必须为msg.update
 - **topic**: 点对点直连概念，相比direct，topic支持routingkey模糊匹配，可以在routingKey写匹配符
@@ -54,7 +54,7 @@
 - **fanout**：广播模式，只有exchange绑定了queue，就都可以匹配，跟routingkey配置无关。无需借助路由，所以发送消息到队列最快
 - **headers**:使用较少
 
-#### 创建队列参数介绍
+### 创建队列参数介绍
 **什么是TTL？time to live:存活时间**
 **创建队列可选参数**
 - **x-message-ttl**:队列内的消息在没被消费时的存活时间
@@ -64,7 +64,7 @@
 - 过限制，则丢弃最早的消息
 - **x-max-length-bytes**:消息队列的最大容量，新消息过来如果容量不够会删除最早的消息，如果还不够，再删一条次最早的消息
 
-#### 死信队列
+### 死信队列
 
 **什么叫死信？**在**未被消费掉之前就失效**的消息成为死信
 

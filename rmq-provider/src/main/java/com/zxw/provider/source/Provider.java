@@ -1,13 +1,11 @@
 package com.zxw.provider.source;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.MessageProperties;
+import com.rabbitmq.client.*;
 import entity.MsgInfo;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -38,7 +36,12 @@ public class Provider {
          * autodelete：是否自动删除的
          * Map:设置一些其他参数，譬如x-message-ttl
          */
-        channel.queueDeclare("zxw-queue",true,false,false,null);
+        Map<String,Object> map = new HashMap<>();
+        map.put("x-message-ttl",60000); // 设置队列中统一消息过期时间为60s
+        map.put("x-dead-letter-exchange","dead-exchange"); // 绑定死信消息和交换器
+        map.put("x-dead-letter-routing-key","dead.flow");
+        map.put("x-max-priority",10);
+        channel.queueDeclare("source-queue",true,false,false,map);
         /**
          * exchange:交换机名
          * type:交换机的类型：topic direct fanout
@@ -46,23 +49,32 @@ public class Provider {
          * autodelete：是否自动删除
          * Map:设置一些其他参数
          */
-        channel.exchangeDeclare("zxw-exchange","direct",true,false,null);
+        channel.exchangeDeclare("source-exchange","topic",true,false,null);
         /**
          * queue:
          * exchange:
          * routingkey:用于绑定队列和交换机的路由键
          */
-        channel.queueBind("zxw-queue","zxw-exchange","zxw.bind");
+        channel.queueBind("source-queue","source-exchange","source.*");
 
-        MsgInfo msgInfo = new MsgInfo("我是消息1","100001","12");
+        MsgInfo msgInfo = new MsgInfo("我是会过期的消息","100001","12");
+
+//        默认基础文本配置
+        BasicProperties defaultBasicProperties = MessageProperties.PERSISTENT_TEXT_PLAIN;
+        AMQP.BasicProperties.Builder builder = new AMQP.BasicProperties.Builder();
+        builder.contentType("text/plain");
+        builder.deliveryMode(2); //持久化消息
+        builder.expiration("5000");//该条消息设置ttl=5s
+        builder.priority(5); // 设置优先级为5
+        AMQP.BasicProperties basicProperties = builder.build();
         /**
          * 发送消息
          * exchange：
          * routingKey
-         * BasicProperties
+         * BasicProperties:基础配置，可以通过建筑者模式构建基础数据
          * byte[]
          */
-        channel.basicPublish("zxw-exchange","zxw.bind",MessageProperties.PERSISTENT_TEXT_PLAIN ,msgInfo.toString().getBytes());
+        channel.basicPublish("source-exchange","source.bind",basicProperties ,msgInfo.toString().getBytes());
 
         //关闭资源
         channel.close();

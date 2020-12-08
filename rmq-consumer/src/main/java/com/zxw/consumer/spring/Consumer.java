@@ -26,9 +26,12 @@ public class Consumer {
     int time = 0;
 
 
-    @RabbitListener(bindings = @QueueBinding(value = @Queue(value = "topic-queue",durable = "true",autoDelete = "false"),
-                                            exchange = @Exchange(value = "topic-exchange",durable = "true",type = "topic"),
-                                            key = "topic.consume"))
+//    可以在@Argument内添加参数包括x-message-ttl、x-dead-letter-exchange、x-dead-letter-routing-key等来定义queue
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(value = "topic-queue",durable = "true",autoDelete = "false"
+                    ,arguments = @Argument(name="x-message-ttl",value = "60000",type = "java.lang.Intger")),
+            exchange = @Exchange(value = "topic-exchange",durable = "true",type = "topic"),
+            key = "topic.consume"))
     @RabbitHandler
     public void received(@Payload MsgInfo msgInfo, @Headers Map<String,Object> headers, Channel channel) throws IOException {
         System.out.println("******************开始接受消息***********************");
